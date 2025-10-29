@@ -1,10 +1,10 @@
-package web
+package web.utils
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.angles.Radians
 import com.sksamuel.scrimage.filter.{BlurFilter, GrayscaleFilter}
-import com.sksamuel.scrimage.webp.WebpWriter
 import com.sksamuel.scrimage.nio.{JpegWriter, PngWriter}
+import com.sksamuel.scrimage.webp.WebpWriter
 
 import java.awt.Color
 import java.io.File
@@ -247,7 +247,8 @@ object Utils {
                   ): ImmutableImage = {
       val rotated = rotate(image, tilt)
       val gray = grayscale(rotated)
-      val contrasted = contrast(gray, contrastFactor)
+      val factor = ContrastLevel.fromFactor(contrastFactor)
+      val contrasted = contrast(gray, factor)
       if (doBinarize) binarize(contrasted, threshold) else contrasted
     }
 
