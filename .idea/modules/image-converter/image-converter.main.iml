@@ -18,6 +18,7 @@
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-core:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-scala_2.13:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-webp:4.0.31:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-filters:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twelvemonkeys.imageio:imageio-core:3.8.2:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twelvemonkeys.imageio:imageio-jpeg:3.8.2:jar" level="project" />
     <orderEntry type="library" name="sbt: com.drewnoakes:metadata-extractor:2.16.0:jar" level="project" />

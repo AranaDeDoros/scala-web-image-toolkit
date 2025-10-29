@@ -15,7 +15,8 @@ lazy val root = (project in file("."))
       munit % Test,
       "com.sksamuel.scrimage" % "scrimage-core" % scrimageVersion,
       "com.sksamuel.scrimage" %% "scrimage-scala" % scrimageVersion,
-      "com.sksamuel.scrimage" % "scrimage-webp" % scrimageVersion
+      "com.sksamuel.scrimage" % "scrimage-webp" % scrimageVersion,
+      "com.sksamuel.scrimage" % "scrimage-filters" % scrimageVersion
     )
   )
 

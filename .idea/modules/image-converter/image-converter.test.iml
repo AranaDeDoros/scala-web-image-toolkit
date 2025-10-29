@@ -20,6 +20,7 @@
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-core:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-scala_2.13:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-webp:4.0.31:jar" level="project" />
+    <orderEntry type="library" name="sbt: com.sksamuel.scrimage:scrimage-filters:4.0.31:jar" level="project" />
     <orderEntry type="library" name="sbt: org.scalameta:junit-interface:0.7.29:jar" level="project" />
     <orderEntry type="library" name="sbt: junit:junit:4.13.2:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twelvemonkeys.imageio:imageio-core:3.8.2:jar" level="project" />
