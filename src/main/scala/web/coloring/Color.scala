@@ -16,7 +16,6 @@ case object Red extends Channel
 /** Represents the green channel of an RGB color. */
 case object Green extends Channel
 
-
 /** Represents the blue channel of an RGB color. */
 case object Blue extends Channel
 
@@ -47,7 +46,6 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
     case x if x > 255 => 255
     case x => x
   }
-
 
   /** Increases or decreases a specific color channel (Red, Green, or Blue) by
    * the given amount, ensuring the resulting value stays within [0, 255].
@@ -85,7 +83,6 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
       clamp(blue + deltaB)
     )
 
-
   /** Blends this color with another color based on the given ratio. A ratio of
    * 0.0 returns this color; a ratio of 1.0 returns the other color.
    * @param other
@@ -97,7 +94,6 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
    * @throws IllegalArgumentException
    * if the ratio is outside [0.0, 1.0]
    */
-
   def mixWith(other: RGBColor, ratio: Double): RGBColor = {
     require(ratio >= 0.0 && ratio <= 1.0, "ratio must be between 0.0 and 1.0")
     def lerp(a: Int, b: Int): Int = (a + (b - a) * ratio).toInt

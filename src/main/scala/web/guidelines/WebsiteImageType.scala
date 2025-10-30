@@ -9,7 +9,6 @@ case class Dimension(width: Int, height: Int) {
     s"${width}x${height}"
   }
 }
-
 case class AspectRatio(dim: Dimension) {
   private val width = this.dim.width
   private val height = this.dim.height
@@ -41,9 +40,9 @@ sealed trait WebsiteImageType {
 
 // Website Image Types
 case class BackgroundImage(
-                            desktop: Dimension = Dimension(2560, 1400),
-                            mobile: Dimension = Dimension(360, 640)
-                          ) extends WebsiteImageType {
+            desktop: Dimension = Dimension(2560, 1400),
+            mobile: Dimension = Dimension(360, 640)
+          ) extends WebsiteImageType {
   override val name = "background"
   override val ratio = AspectRatio(desktop)
 }
@@ -157,7 +156,8 @@ object WebsiteImageType {
     all.foreach { img =>
       val d = img.desktop
       val m = img.mobile
-      println(f"${img.name}%-20s ${s"${d.width}x${d.height}"}%-20s ${s"${m.width}x${m.height}"}%-20s ${img.ratio}")
+      println(f"${img.name}%-20s ${s"${d.width}x${d.height}"}%-20s " +
+        f"${s"${m.width}x${m.height}"}%-20s ${img.ratio}")
     }
   }
 
@@ -166,15 +166,15 @@ object WebsiteImageType {
 }
 
 object Test extends App {
-  print(WebsiteImageType.all)
-  WebsiteImageType.all.foreach { img =>
-    println(f"${img.name}%-20s ${img.desktop.width}x${img.desktop.height}  ratio=${img.ratio}")
-  }
-  //  val bi = BackgroundImage()
-  //  println(s"ratio: ${bi.ratio} " +
-  //    s"desktop: ${bi.desktop} " +
-  //    s"mobile: ${bi.mobile}")
-  //
+  //  print(WebsiteImageType.all)
+  //  WebsiteImageType.all.foreach { img =>
+  //    println(f"${img.name}%-20s ${img.desktop.width}x${img.desktop.height}  ratio=${img.ratio}")
+  //  }
+  val bi = BackgroundImage()
+  println(s"ratio: ${bi.ratio} " +
+    s"desktop: ${bi.desktop} " +
+    s"mobile: ${bi.mobile}")
+
 }
 
 

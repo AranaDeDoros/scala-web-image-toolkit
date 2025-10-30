@@ -145,15 +145,25 @@ object Utils {
    * do not perform IO.
    */
   object OCR {
-    /** Clamps a color channel value to the valid RGB range [0, 255].
+    /**
+     * Clamps an integer value to the range [0, 255].
      *
-     * @param v the input channel value
-     * @return the clamped value within [0,255]
+     * This is a `PartialFunction` from `Int` to `Int` that:
+     *   - Returns 0 if the input is less than 0.
+     *   - Returns 255 if the input is greater than 255.
+     *   - Returns the input itself if it is within the range 0 to 255.
+     *
+     * Example usage:
+     * {{{
+     *   clamp(-5)   // returns 0
+     *   clamp(100)  // returns 100
+     *   clamp(300)  // returns 255
+     * }}}
      */
     private val clamp: PartialFunction[Int, Int] = {
-      case x if x < 0   => 0
+      case x if x < 0 => 0
       case x if x > 255 => 255
-      case x            => x
+      case x => x
     }
 
     sealed trait ContrastLevel {
@@ -165,10 +175,12 @@ object Utils {
       case object Normal extends ContrastLevel {
         val factor: Double = 1.0
       }
+
       /** (factor > 1.0) */
       case class High(factor: Double) extends ContrastLevel {
         require(factor > 1.0, "High contrast factor must be > 1.0")
       }
+
       /** (factor < 1.0) */
       case class Low(factor: Double) extends ContrastLevel {
         require(factor < 1.0, "Low contrast factor must be < 1.0")
@@ -176,34 +188,11 @@ object Utils {
 
       /** factory method from a Double factor */
       def fromFactor(factor: Double): ContrastLevel = factor match {
-        case 1.0        => Normal
+        case 1.0 => Normal
         case f if f > 1 => High(f)
         case f if f < 1 => Low(f)
       }
     }
-    /** Adjusts image contrast by scaling the distance of pixel intensities from
-     * the midpoint (128).
-     *
-     * @param image  the input image
-     * @param factor contrast factor (1.0 = normal, >1.0 = higher contrast, <1.0 = lower contrast)
-     * @return a new [[ImmutableImage]] with adjusted contrast
-     */
-    def contrast(image: ImmutableImage, level: ContrastLevel): ImmutableImage = {
-      val factor = level.factor
-      image.map { p =>
-        def adj(c: Int) = clamp(((c - 128) * factor + 128).toInt)
-        new java.awt.Color(adj(p.red), adj(p.green), adj(p.blue), p.alpha)
-      }
-    }
-
-    /** Rotates an image to correct tilt or skew.
-     *
-     * @param image    the input image
-     * @param radians rotation angle in radians (positive = counterclockwise)
-     * @return a new [[ImmutableImage]] rotated by the specified angle
-     */
-    def rotate(image: ImmutableImage, radians: Double): ImmutableImage =
-      if (radians != 0.0) image.rotate(new Radians(radians)) else image
 
     /** Converts an image to grayscale using a weighted luminance filter.
      *
@@ -226,6 +215,32 @@ object Utils {
         val v = if ((p.red + p.green + p.blue) / 3 > threshold) 255 else 0
         new Color(v, v, v, p.alpha)
       }
+
+    /** Adjusts image contrast by scaling the distance of pixel intensities from
+     * the midpoint (128).
+     *
+     * @param image  the input image
+     * @param factor contrast factor (1.0 = normal, >1.0 = higher contrast, <1.0 = lower contrast)
+     * @return a new [[ImmutableImage]] with adjusted contrast
+     */
+    def contrast(image: ImmutableImage, level: ContrastLevel): ImmutableImage = {
+      val factor = level.factor
+      image.map { p =>
+        def adj(c: Int) = clamp(((c - 128) * factor + 128).toInt)
+        new java.awt.Color(adj(p.red), adj(p.green), adj(p.blue), p.alpha)
+      }
+    }
+
+    /** Rotates an image to correct tilt or skew.
+     *
+     * @param image   the input image
+     * @param radians rotation angle in radians (positive = counterclockwise)
+     * @return a new [[ImmutableImage]] rotated by the specified angle
+     */
+    def rotate(image: ImmutableImage, radians: Double): ImmutableImage =
+      if (radians != 0.0) image.rotate(new Radians(radians)) else image
+
+
 
     /** Performs a complete preprocessing pipeline for OCR:
      * rotation correction, grayscale conversion, contrast adjustment,
