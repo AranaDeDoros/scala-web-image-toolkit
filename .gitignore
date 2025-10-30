@@ -1,3 +1,9 @@
 /.bsp/
 target/
 .idea/
+
+# sbt build
+
+target/
+
+project/target/
