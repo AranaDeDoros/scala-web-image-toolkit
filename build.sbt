@@ -16,7 +16,8 @@ lazy val root = (project in file("."))
       "com.sksamuel.scrimage" % "scrimage-core" % scrimageVersion,
       "com.sksamuel.scrimage" %% "scrimage-scala" % scrimageVersion,
       "com.sksamuel.scrimage" % "scrimage-webp" % scrimageVersion,
-      "com.sksamuel.scrimage" % "scrimage-filters" % scrimageVersion
+      "com.sksamuel.scrimage" % "scrimage-filters" % scrimageVersion,
+       "org.scala-lang" % "scala-reflect" % scalaVersion.value
     )
   )
 
