@@ -115,7 +115,8 @@ object Main extends App {
 
   // search by name
   WebsiteImageType.fromName("logo_square") match {
-    case Some(img) => println(s"square logo found: ${img.desktop} x ${img.mobile}, ratio=${img.ratio}")
+    case Some(img) => println(s"square logo found guidelines for desktop: ${img.desktop} " +
+      s" for mobile: ${img.mobile}, ratio=${img.ratio}")
     case None => println("square logo not found")
   }
 

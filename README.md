@@ -97,12 +97,25 @@ images.headOption.foreach { imgFile =>
 ````
  ### color examples
 ```scala
-val red = RGBColor(100, 50, 200)
-val brighter = red.increaseAll(50, 30, -100)
-val blue = RGBColor(0, 0, 255)
-val mixed = red.mixWith(blue, 0.5)
+val redColor = RGBColor(100, 50, 200)
+println(s"initial color: $redColor, hex=${redColor.toHex}")
+
+// increase channels
+val brighter = redColor.increaseAll(50, 30, -100)
+println(s"adjusted color: $brighter, hex=${brighter.toHex}")
+
+// mix 'em up
+val blueColor = RGBColor(0, 0, 255)
+val mixed = redColor.mixWith(blueColor, 0.5)
+println(s"50% mix: $mixed, hex=${mixed.toHex}")
+
+// from hex
 val fromHex = RGBColor.fromHex("#ff00cc")
-val random = RGBColor.random()
+println(s"from hex '#ff00cc': $fromHex")
+
+// random color
+val randomColor = RGBColor.random()
+println(s"random color: $randomColor, hex=${randomColor.toHex}"
 ```
 ### output
 ```
@@ -116,7 +129,10 @@ random color: RGBColor(75,123,240), hex=#4B7BF0
 ### web guidelines examples
 ```scala
 WebsiteImageType.summary()
-WebsiteImageType.fromName("logo_square")
+WebsiteImageType.fromName("logo_square") match {
+  case Some(img) => println(s"square logo found guidelines for desktop: ${img.desktop} " +
+    s" for mobile: ${img.mobile}, ratio=${img.ratio}")
+  case None => println("square logo not found")
 ```
 ### output
 ```
@@ -134,5 +150,5 @@ lightbox             1920x1080            360x640              16:9
 thumbnail            300x300              90x90                1:1
 product_thumbnail    300x300              150x150              1:1
 
-square logo found: 512 x 256, ratio=1.0
+square logo found guidelines for desktop: 100x100  for mobile: 60x60, ratio=1:1
 ```
