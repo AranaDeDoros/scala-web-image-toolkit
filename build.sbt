@@ -5,11 +5,11 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-lazy val scrimageVersion = "4.0.31" // o el más reciente disponible
+lazy val scrimageVersion = "4.0.31"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "image-converter",
+    name := "scala-web-image-toolkit",
 
     libraryDependencies ++= Seq(
       munit % Test,
