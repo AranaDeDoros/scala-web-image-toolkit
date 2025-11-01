@@ -3,21 +3,37 @@ package coloring
 import java.awt.Color
 import scala.util.Try
 
+trait DigitalColor[C <: Channel, V, Self <: DigitalColor[C, V, Self]] {
+  /** Generic way to modify a specific channel.
+   * Takes a channel first, then a transformation function for its current value.
+   */
+  def modifyChannel(channel: C)(f: V => V): Self
+
+  /** Increase a channel by an amount */
+  def increaseChannel(channel: C, delta: V)(implicit numeric: Numeric[V]): Self =
+    modifyChannel(channel)(v => numeric.plus(v, delta))
+
+  /** Ensures the input of valid values for color modes */
+  protected def clamp(value: V): V
+}
+
 /** Represents the available RGB color channels.
  * Each channel corresponds to one
  * component of the RGB color model.
  */
 
 sealed trait Channel
+sealed trait RGBChannel extends Channel
 
 /** Represents the red channel of an RGB color. */
-case object Red extends Channel
+case object Red extends RGBChannel
+
 
 /** Represents the green channel of an RGB color. */
-case object Green extends Channel
+case object Green extends RGBChannel
 
 /** Represents the blue channel of an RGB color. */
-case object Blue extends Channel
+case object Blue extends RGBChannel
 
 
 /** Represents an RGB color with red, green, and blue components.
@@ -31,7 +47,8 @@ case object Blue extends Channel
  *
  */
 
-case class RGBColor(red: Int, green: Int, blue: Int) {
+case class RGBColor(red: Int, green: Int, blue: Int)
+  extends DigitalColor[RGBChannel, Int, RGBColor] {
   /** Converts this RGBColor instance into a java.awt.Color object.
    * @return
    * a Color object representing this RGB color
@@ -41,26 +58,23 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
   /** Clamps a color channel value to the valid range [0, 255]. Values below 0
    * are set to 0, and values above 255 are set to 255.
    */
-  private val clamp: PartialFunction[Int, Int] = {
-    case x if x < 0 => 0
-    case x if x > 255 => 255
-    case x => x
-  }
+  override protected def clamp(value: Int): Int =
+    if (value < 0) 0 else if (value > 255) 255 else value
 
   /** Increases or decreases a specific color channel (Red, Green, or Blue) by
    * the given amount, ensuring the resulting value stays within [0, 255].
    * @param channel
    * the color channel to modify
-   * @param amount
-   * the amount to add (can be negative)
+   * @param f
+   * transformation function for the amount to add (can be negative)
    * @return
    * a new RGBColor with the modified channel
    */
-
-  def increaseChannel(channel: Channel, amount: Int): RGBColor = channel match {
-    case Red => copy(red = clamp(red + amount))
-    case Green => copy(green = clamp(green + amount))
-    case Blue => copy(blue = clamp(blue + amount))
+  override def modifyChannel(channel: RGBChannel)(f: Int => Int): RGBColor =
+    channel match {
+    case Red   => copy(red = clamp(f(red)))
+    case Green => copy(green = clamp(f(green)))
+    case Blue  => copy(blue = clamp(f(blue)))
   }
 
   /** Increases or decreases all color channels simultaneously by different
@@ -75,7 +89,6 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
    * @return
    * a new RGBColor with adjusted channels
    */
-
   def increaseAll(deltaR: Int, deltaG: Int, deltaB: Int): RGBColor =
     RGBColor(
       clamp(red + deltaR),
@@ -109,9 +122,7 @@ case class RGBColor(red: Int, green: Int, blue: Int) {
    * @return
    * a lowercase hexadecimal color string
    */
-
   def toHex: String = f"#$red%02x$green%02x$blue%02x"
-
 }
 
 /** Companion object for [[RGBColor]] providing utility factory methods.
@@ -171,4 +182,37 @@ object RGBColor {
   }
 }
 
- 
+sealed trait CMYKChannel extends Channel
+case object Cyan extends CMYKChannel
+case object Magenta extends CMYKChannel
+case object Yellow extends CMYKChannel
+case object Key extends CMYKChannel
+
+case class CMYKColor(cyan: Int, magenta: Int, yellow: Int, key: Int)
+  extends DigitalColor[CMYKChannel, Int, CMYKColor] {
+
+  /**Ensures channel values stay within 0–100 */
+  override protected def clamp(x: Int): Int =
+    if (x < 0) 0 else if (x > 100) 100 else x
+
+  /**Curried higher-order modifier for channel transformations */
+  override def modifyChannel(channel: CMYKChannel)(f: Int => Int): CMYKColor =
+    channel match {
+    case Cyan    => copy(cyan = clamp(f(cyan)))
+    case Magenta => copy(magenta = clamp(f(magenta)))
+    case Yellow  => copy(yellow = clamp(f(yellow)))
+    case Key     => copy(key = clamp(f(key)))
+  }
+
+  /**lighten/darken overall color */
+  def adjustAll(f: Int => Int): CMYKColor =
+    CMYKColor(
+      clamp(f(cyan)),
+      clamp(f(magenta)),
+      clamp(f(yellow)),
+      clamp(f(key))
+    )
+
+  /**human-readable debug string */
+  override def toString: String =  s"CMYK(c=$cyan%, m=$magenta%, y=$yellow%, k=$key%)"
+}

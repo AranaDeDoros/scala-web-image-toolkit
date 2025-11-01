@@ -1,10 +1,11 @@
 package example
 
-import coloring.RGBColor
+import coloring.{CMYKColor, Magenta, RGBColor, Red, Yellow}
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.webp.WebpWriter
 import web.guidelines.{BackgroundImage, HeroImage, WebsiteImageType}
 import web.utils.Utils
+
 import java.awt.Color
 import java.io.{File, IOException}
 
@@ -79,41 +80,56 @@ object Main extends App {
 
   println("=== color tests ===")
 
-  // create a color
+  //create a color
   val redColor = RGBColor(100, 50, 200)
   println(s"initial color: $redColor, hex=${redColor.toHex}")
 
-  // increase channels
+  //increase channels
   val brighter = redColor.increaseAll(50, 30, -100)
   println(s"adjusted color: $brighter, hex=${brighter.toHex}")
 
-  // mix 'em up
+  //mix 'em up
   val blueColor = RGBColor(0, 0, 255)
   val mixed = redColor.mixWith(blueColor, 0.5)
   println(s"50% mix: $mixed, hex=${mixed.toHex}")
 
-  // from hex
+  //from hex
   val fromHex = RGBColor.fromHex("#ff00cc")
   println(s"from hex '#ff00cc': $fromHex")
 
-  // random color
+  //random color
   val randomColor = RGBColor.random()
   println(s"random color: $randomColor, hex=${randomColor.toHex}")
 
+  val cmyk = CMYKColor(20, 40, 60, 10)
+  val rgb = RGBColor(100, 150, 200)
+
+  //increase specific channel by 10 (using currying)
+  val brighterMagenta = cmyk.modifyChannel(Magenta)(_ + 10)
+  println(brighterMagenta)
+
+  //using the shortcut increaseChannel
+  val brighterRed = rgb.increaseChannel(Red, 20)
+  println(brighterRed)
+
+  //more complex HOF: halve yellow
+  val lessYellow = cmyk.modifyChannel(Yellow)(_ / 2)
+  println(lessYellow)
+
   println("=== WebsiteImageType tests ===")
 
-  // list available images and its guidelines
+  //list available images and its guidelines
   println("Resumen de imágenes:")
   WebsiteImageType.summary()
 
-  // testing specific types
+  //testing specific types
   val bg = BackgroundImage()
   println(s"background image: ${bg.name}, ratio=${bg.ratio}, desktop=${bg.desktop}, mobile=${bg.mobile}")
 
   val hero = HeroImage()
   println(s"hero image: ${hero.name}, ratio=${hero.ratio}, desktop=${hero.desktop}, mobile=${hero.mobile}")
 
-  // search by name
+  //search by name
   WebsiteImageType.fromName("logo_square") match {
     case Some(img) => println(s"square logo found guidelines for desktop: ${img.desktop} " +
       s" for mobile: ${img.mobile}, ratio=${img.ratio}")
