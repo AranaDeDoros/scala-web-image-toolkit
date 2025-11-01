@@ -116,6 +116,22 @@ println(s"from hex '#ff00cc': $fromHex")
 // random color
 val randomColor = RGBColor.random()
 println(s"random color: $randomColor, hex=${randomColor.toHex}"
+
+val cmyk = CMYKColor(20, 40, 60, 10)
+val rgb = RGBColor(100, 150, 200)
+
+//increase specific channel by 10 (using currying)
+val brighterMagenta = cmyk.modifyChannel(Magenta)(_ + 10)
+println(brighterMagenta)
+
+//using the shortcut increaseChannel
+val brighterRed = rgb.increaseChannel(Red, 20)
+println(brighterRed)
+
+//more complex HOF: halve yellow
+val lessYellow = cmyk.modifyChannel(Yellow)(_ / 2)
+println(lessYellow)
+
 ```
 ### output
 ```
