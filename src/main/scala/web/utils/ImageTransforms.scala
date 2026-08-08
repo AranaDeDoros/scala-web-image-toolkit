@@ -2,17 +2,13 @@ package web.utils
 
 import coloring.RGBColor
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.angles.Radians
-import com.sksamuel.scrimage.filter.{BlurFilter, GrayscaleFilter}
+import com.sksamuel.scrimage.filter.BlurFilter
 import com.sksamuel.scrimage.nio.{ImageWriter, JpegWriter, PngWriter}
 import com.sksamuel.scrimage.webp.WebpWriter
-import de.androidpit.colorthief.ColorThief
 import web.guidelines.Dimension
 
-import java.awt.image.BufferedImage
-import java.awt.{Color, Font, RenderingHints}
+import java.awt.Color
 import java.io.File
-import javax.imageio.ImageIO
 import scala.util.Try
 
 /** Functional utilities for image processing with safe IO using Either.
@@ -34,7 +30,7 @@ object ImageTransforms {
 
   case object Webp extends ImageFormat {
     val extension = ".webp"
-    val writer: WebpWriter = WebpWriter.MAX_LOSSLESS_COMPRESSION
+    val writer: WebpWriter = WebpWriter.DEFAULT
   }
 
   case object Jpeg extends ImageFormat {
@@ -44,7 +40,7 @@ object ImageTransforms {
 
   case object Png extends ImageFormat {
     val extension = ".png"
-    val writer: PngWriter = PngWriter.NoCompression
+    val writer: PngWriter = PngWriter.MinCompression
   }
 
   sealed trait ThumbType {
@@ -144,7 +140,7 @@ object ImageTransforms {
           .getOrElse(ImmutableImage.create(width, height))
         val finalImage = if (applyBlur) image.filter(new BlurFilter()) else image
         val outputFile = new File(outputDir, s"placeholder_$i.webp")
-        finalImage.output(WebpWriter.MAX_LOSSLESS_COMPRESSION, outputFile)
+        finalImage.output(WebpWriter.DEFAULT, outputFile)
         outputFile
       }.toEither.left.map(ex => TransformationError(s"Error generating placeholder $i: ${ex.getMessage}"))
     }
@@ -188,7 +184,7 @@ object ImageTransforms {
     Try {
       val image = ImmutableImage.loader().fromFile(inputFile)
       val cropped = autoCrop(image, bgColor)
-      cropped.output(WebpWriter.MAX_LOSSLESS_COMPRESSION, outputFile)
+      cropped.output(WebpWriter.DEFAULT, outputFile)
       outputFile
     }.toEither.left.map(ex => TransformationError(s"Error auto-cropping ${inputFile.getName}: ${ex.getMessage}"))
 
