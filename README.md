@@ -194,8 +194,9 @@ square logo found guidelines for desktop: 100x100  for mobile: 60x60, ratio=1:1
 ```
 ---
 # TODO #
-- [ ] Create abstractions for creating Pipelines and Batches
-- [ ] Add a true Asset pipeline.
+- [x] Create abstractions for creating Pipelines and Batches
+- [x] Add a true Asset pipeline.
+- [ ] Add resume and collection of results to Pipe and Batch.
 - [ ] Extend image extensions support.
 ---
 # Docs #
