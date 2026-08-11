@@ -4,10 +4,13 @@ import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.angles.Radians
 import com.sksamuel.scrimage.filter.GrayscaleFilter
 import com.sksamuel.scrimage.nio.JpegWriter
+import web.utils.ImageTransforms.TransformationError
 
 import java.awt.Color
 import java.io.File
 import scala.util.Try
+
+case class OptimizationError(message: String) extends AnyVal
 
 /** Utility object for performing image preprocessing tasks for OCR.
  *
@@ -16,6 +19,7 @@ import scala.util.Try
  * do not perform IO.
  */
 object OCR {
+  type  OptimizationBytesResult = Either[ OptimizationError, Array[Byte]]
   /**
    * Clamps an integer value to the range [0, 255].
    *
@@ -164,6 +168,39 @@ object OCR {
         if (doBinarize) binarize(contrasted, threshold) else contrasted
       }
     }
+  }
+
+  /** Performs a complete preprocessing pipeline for OCR:
+   * rotation correction, grayscale conversion, contrast adjustment,
+   * and optional binarization.
+   *
+   * @param input          the file bytes
+   * @param tilt           rotation angle in degrees (default: 0.0)
+   * @param contrastFactor contrast multiplier (default: 1.4)
+   * @param threshold      threshold for binarization (default: 128)
+   * @param doBinarize     whether to perform binarization (default: true)
+   * @return                Either[OptimizationError, Array[Byte]
+   */
+  def optimize(
+                input: Array[Byte],
+                tilt: Double,
+                contrastFactor: Double,
+                threshold: Int,
+                doBinarize: Boolean
+              ): OptimizationBytesResult = {
+
+    Try {
+      val image = ImmutableImage.loader().fromBytes(input)
+      val rotated = rotate(image, tilt)
+      val gray = grayscale(rotated)
+      val factor = ContrastLevel.fromFactor(contrastFactor)
+      val contrasted = contrast(gray, factor)
+      val result = if (doBinarize) binarize(contrasted, threshold) else contrasted
+      result.bytes(new JpegWriter().withCompression(90))
+    }.toEither.left.map(ex =>
+      OptimizationError(s"Error converting bytes: ${ex.getMessage}")
+    )
+
   }
 
   /** Saves an image to disk in JPEG format with adjustable compression quality.
