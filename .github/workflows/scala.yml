@@ -44,7 +44,7 @@ jobs:
     - name: Get previous tag
       id: prev_tag
       run: |
-        git fetch --tags
+        git fetch --tags --force
         PREV=$(git tag --sort=-creatordate | grep -v "^${{ github.ref_name }}$" | head -n1)
         echo "tag=$PREV" >> "$GITHUB_OUTPUT"
           
