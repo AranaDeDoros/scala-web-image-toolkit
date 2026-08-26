@@ -211,6 +211,31 @@ object ImageTransforms {
       }.toEither.left.map(ex => TransformationError(s"Error generating placeholder $i: ${ex.getMessage}"))
     }
 
+  /** Generates a series of placeholder images safely.
+   *
+   * @param number    the number of placeholder images to generate
+   * @param width     width of each image
+   * @param height    height of each image
+   * @param fillColor optional Color to fill the image; if None, transparent
+   * @param applyBlur whether to apply a blur effect
+   * @return sequence of TransformationBytesResult
+   */
+  def generatePlaceholders(
+                            number: Int,
+                            width: Int,
+                            height: Int,
+                            fillColor: Option[Color] = Some(new Color(100,100,100,0.5f)),
+                            applyBlur: Boolean = true,
+                          ): Seq[TransformationBytesResult] =
+    (1 to number).map { i =>
+      Try {
+        val image = fillColor.map(c => ImmutableImage.filled(width, height, c))
+          .getOrElse(ImmutableImage.create(width, height))
+        val finalImage = if (applyBlur) image.filter(new BlurFilter()) else image
+        finalImage.bytes(WebpWriter.DEFAULT)
+      }.toEither.left.map(ex => TransformationError(s"Error generating placeholder $i: ${ex.getMessage}"))
+    }
+
   /** Removes all metadata from an image and saves it as a clean PNG safely.
    *
    * @param inputFile  the image file to process
