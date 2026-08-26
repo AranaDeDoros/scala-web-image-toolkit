@@ -220,7 +220,7 @@ object ImageTransforms {
    * @param applyBlur whether to apply a blur effect
    * @return sequence of TransformationBytesResult
    */
-  def generatePlaceholders(
+  def generatePlaceholderBytes(
                             number: Int,
                             width: Int,
                             height: Int,
